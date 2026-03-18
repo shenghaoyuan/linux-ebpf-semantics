@@ -4,7 +4,7 @@
 
 - `ebpf/`: the eBPF State, Syntax, and Semantics + Validaiton Workflow
 - `src/`: tnum soundness proofs
-- `trace/`: execution traces from Linux kernel + Three Official Linux eBPF test suites ([progs](https://elixir.bootlin.com/linux/v7.0-rc4/source/tools/testing/selftests/bpf/progs) + [test_progs](https://elixir.bootlin.com/linux/v7.0-rc4/source/tools/testing/selftests/bpf/test_progs) + [test_bpf](https://elixir.bootlin.com/linux/v7.0-rc4/source/lib/test_bpf.c))
+- `trace/`: execution traces from Linux kernel + Two Official Linux eBPF test suites (1. [progs](https://elixir.bootlin.com/linux/v7.0-rc4/source/tools/testing/selftests/bpf/progs) / [test_progs](https://elixir.bootlin.com/linux/v7.0-rc4/source/tools/testing/selftests/bpf/test_progs); 2. [test_bpf](https://elixir.bootlin.com/linux/v7.0-rc4/source/lib/test_bpf.c))
 
 ## Install
 
