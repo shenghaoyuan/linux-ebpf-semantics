@@ -8,12 +8,13 @@
 
 ## Install
 
-Use opam to install coq (8.19.0), coq-compcert, and coq-itauto. (*Coq is the old name of Rocq*)
+Use opam to install coq (8.19.0) and coq-compcert. (*Coq is the old name of Rocq*)
 
 ```shell
+opam switch create linux-ebpf --empty
 opam pin coq 8.19.0
 opam repo add coq-released https://coq.inria.fr/opam/released
-opam install coq coqide coq-compcert yojson
+opam install coq coq-compcert yojson
 ```
 
 ## Check the proof
