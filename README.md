@@ -58,7 +58,7 @@ sudo apt-get install cloc
 
 # Go to the root directory of this repo
 make tnumcode # tnum code size using coqwc
-make bpfcode # tnum code size using coqwc
+make bpfcode # bpf semantic code size using coqwc
 make validationcode # ocaml code size using cloc
 ```
 
