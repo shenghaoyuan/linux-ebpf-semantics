@@ -58,7 +58,10 @@ sudo apt-get install cloc
 # Go to the root directory of this repo
 make tnumcode # tnum code size using coqwc
 make bpfcode # tnum code size using coqwc
+make validationcode # ocaml code size using cloc
 ```
+
+Note that, we don't provide the kernel patch + eBPF observer code, and other files, it will be provided within a VM image during the AE.
 
 - The code does not contain any unfinished proofs. To verify this, you can use the following command
 ```shell
