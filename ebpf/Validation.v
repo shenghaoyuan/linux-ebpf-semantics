@@ -64,20 +64,6 @@ Definition cast_address_abs_to_concrete (addr: val) (addr_map: list addr_region)
   | _ => None
   end.
 
-(*
-Definition is_final_state (ins: instruction) (rs: regset) (addr_map: list addr_region) (init_sp: int64): bool :=
-  match ins with
-  | Pret =>
-    match (rs R10) with
-    | Vptr b ofs =>
-      match cast_address_abs_to_concrete (Vptr b ofs) addr_map with
-      | None => false
-      | Some i => Int64.eq init_sp i
-      end
-    | _ => false
-    end
-  | _ => false
-  end. *)
 Definition is_final_state (ins: instruction) (stk: cstk): bool :=
   match ins with
   | Pret =>
@@ -87,6 +73,7 @@ Definition is_final_state (ins: instruction) (stk: cstk): bool :=
     end
   | _ => false
   end.
+
 (**r
 - when av is Vlong, just compare two int64
 - when av is ptr, first cast ptr to int64, then compare two int64
@@ -179,7 +166,7 @@ Fixpoint bpf_interpreter_trace_check (fuel: nat) (addr_map: list addr_region) (i
                 match List.nth_error h 0%nat with
                 | None => debug_fail_common "No R0 found in trace"
                 | Some r0 =>
-                (** TODO: we assume the return value is Vlong, but it is possible to be a pointer *)
+                (** here we assume the return value is Vlong *)
                   bpf_interpreter_trace_check k addr_map init_sp bpf_prog t
                     (Next (nextinstr (rs#R0 <- (Vlong r0))) stk code_id tail_call_cnt m)
                 end
@@ -219,13 +206,10 @@ Fixpoint bpf_interpreter_trace_check (fuel: nat) (addr_map: list addr_region) (i
   end.
 
 Definition create_initial_state (ctx stk pc: block): regset :=
-  (* (Pregmap.init (Vlong Int64.zero)) *)
   (Pregmap.init Vundef)
     # PC <- (Vptr pc Ptrofs.zero)
     # R10 <- (Vptr stk (Ptrofs.repr bpf_stack_size))
-    (* # R10 <- (Vptr stk Ptrofs.zero) *)
     # R1 <- (Vptr ctx Ptrofs.zero)
-    (* # BP  <- Vnullptr *)
 .
 
 Fixpoint create_jump_table (jmp_blk: block) (jmp_table: list (Z * int64 * code)) (addr_map: list addr_region) (m: mem): (list addr_region) * mem :=
@@ -315,14 +299,14 @@ Definition semantics_validation (bpf_prog: code)
     jmp_blk points to the jump_table used by tail_call functions: where
     - [i:i+7] stores a point to the jump_table[i]
   *)
-  let (m4, jmp_blk) := Mem.alloc m3 0 (Z.of_nat (8*33)) (** TODO:  *) in
+  let (m4, jmp_blk) := Mem.alloc m3 0 (Z.of_nat (8*33)) in
 
   (** addr_map: *)
   let addr_map := [
     {| 
       base_blk := pc_blk;
       size_blk := Z.of_nat (8*(List.length bpf_prog));
-      base_addr := Int64.zero  (** TODO we assume pc address is 0 here *) 
+      base_addr := Int64.zero  (** we assume pc address is 0 here *) 
     |};
     {| 
       base_blk := ctx_blk;
@@ -331,7 +315,7 @@ Definition semantics_validation (bpf_prog: code)
     |};
     {| 
       base_blk := jmp_blk;
-      size_blk := Z.of_nat (8*33); (** TODO:  *) 
+      size_blk := Z.of_nat (8*33);
       base_addr := fst jmp_table
     |} ] in
   let (addr_map5, m5) := create_jump_table jmp_blk (snd jmp_table) addr_map m4 in

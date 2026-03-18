@@ -231,7 +231,6 @@ Definition decode_insn (opcode : byte) (dst_reg src_reg : ireg) (off : Ptrofs.in
 Definition decode_lddw_insn (dst_reg src_reg : ireg) (imm next_imm : int) : option instruction :=
   match src_reg with
   | R0 => Some (Plddw PSEUDO_Constant dst_reg imm next_imm)
-  (* TODO : R1~R6 *)
   | R1 => Some (Plddw PSEUDO_MAP_FD dst_reg imm next_imm)
   | R5 => Some (Plddw PSEUDO_MAP_IDX dst_reg imm next_imm)
   | R2 => Some (Plddw PSEUDO_MAP_VALUE dst_reg imm next_imm)

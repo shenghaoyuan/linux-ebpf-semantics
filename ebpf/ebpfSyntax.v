@@ -1,7 +1,5 @@
 From Coq Require Import List.
 
-(** Abstract syntax and semantics for RISC-V assembly language. *)
-
 From compcert Require Import Coqlib Ctypes AST Integers.
 From compcert Require Import Maps Values Memory.  (*
 From compcert.common Require Import Globalenvs. *) (*
@@ -16,7 +14,6 @@ Import ListNotations.
 
 (** Registers. *)
 
-(** RFC9559: TODO *)
 Inductive ireg: Type := R0 | R1 | R2 | R3 | R4 | R5 | R6 | R7 | R8 | R9 
   | R10 (**r eBPF stack frame pointer *)
   | RAX (**r hidden auxiliary/helper register *).
@@ -35,8 +32,7 @@ Definition callee_saved_registers: list ireg := [R6; R7; R8; R9].
 
 Inductive preg :=
 | IR : ireg -> preg  (**r integer registers *)
-| PC : preg          (**r program counter *)  (*
-| BP : preg          (**r base address register *) *)
+| PC : preg          (**r program counter *)
 .
 
 Coercion IR: ireg >-> preg.
@@ -73,7 +69,6 @@ Notation "'SP'" := R10 (only parsing) : asm.
 (some arithmetic instructions reuse this field for other purposes)
 - **imm**: signed integer immediate value
 
-TODO: adding range of each field
 *)
 Definition off := Ptrofs.int. (* 16 bits *)
 Definition imm := int. (* 32 bits *)

@@ -1,7 +1,5 @@
 From Coq Require Import List.
 
-(** Abstract syntax and semantics for RISC-V assembly language. *)
-
 From compcert Require Import Coqlib Ctypes AST Integers.
 From compcert Require Import Maps Values Memory.  (*
 From compcert.common Require Import Globalenvs. *) (*
