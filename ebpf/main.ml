@@ -4,7 +4,7 @@ open Validation
 open Yojson.Safe.Util
 
 (* ========================================== *)
-(* 1. OCaml type to Coq type *)
+(* 1. Type casting between OCaml and Coq *)
 (* ========================================== *)
 let rec positive_of_uint64 n =
   if n = 0L then failwith "unreachable"
@@ -27,13 +27,11 @@ let cast_trace t = List.map cast_list t
 let coq_Z_of_int n =
   coq_Z_of_int64 (Stdlib.Int64.of_int n)
 
-(* 转换 mem_block: (addr, size, ty) -> (nat * int64) *)
 let cast_mem_blocks l =
   List.map (fun (size, addr) -> 
     (coq_Z_of_int size, compcert_int64_of_native addr)
   ) l
 
-(* 转换 jmp_table: (map_ptr, [(index, target, insns)]) -> (int64, ((nat * int64) * list int64) list) *)
 let cast_jmp_table (map_ptr, l) =
   (compcert_int64_of_native map_ptr,
   List.map (fun (index, target, insns) ->
@@ -60,13 +58,11 @@ let parse_uint64 json_node =
   | `String s -> z_to_int64 (Zarith.of_string s)
   | _ -> failwith "Invalid number format in JSON"
 
-(* 解析内存块对象 *)
 let parse_mem_block node =
   let base_addr = node |> member "base_addr" |> parse_uint64 in
   let size = node |> member "size" |> to_int in
   (size, base_addr)
 
-(* 解析跳转表条目 *)
 let parse_jmp_entry node =
   let index = node |> member "index" |> to_int in
   let target = node |> member "target" |> parse_uint64 in
@@ -75,13 +71,11 @@ let parse_jmp_entry node =
 
 let parse_single_program prog_node =
   let prog_name = prog_node |> member "prog_name" |> to_string in
-  
-  (* 对应新的字段名 "prog_insn" *)
+
   let prog_insn = 
     prog_node |> member "prog_insn" |> to_list |> List.map parse_uint64 
   in
-  
-  (* 对应新的 Trace 结构：直接是 string list list *)
+
   let trace_nodes = prog_node |> member "trace" |> to_list in
   let trace = 
     List.map (fun t_node ->
@@ -141,15 +135,6 @@ let run_test filename verbose =
       Printf.printf "  - Trace steps  : %d\n" (List.length trace_mock)
     end;
 
-    (* Constuct initial state and align the timeline *)
-    (* let aligned_trace_mock =
-        let r1_ctx = ctx_ptr in
-        let r10_stk = List.hd sp_list in
-        (* Initial state：R1 and R10 are initialized, others are 0 *)
-        let init_regs = [0L; r1_ctx; 0L; 0L; 0L; 0L; 0L; 0L; 0L; 0L; r10_stk; 0L] in
-        init_regs :: trace_mock
-    in *)
-
     let result = semantics_validation 
                     (cast_list prog_mock)
                     (compcert_int64_of_native ctx_ptr)
@@ -187,9 +172,7 @@ let () =
       if arg = "test_progs" || arg = "test_bpf" then begin
         let dir_path = "../trace/" ^ arg ^ "/" in
         try
-          (* 1. 获取目录下所有文件 *)
           let files = Sys.readdir dir_path in
-          (* 2. 过滤出 .json 文件并去掉后缀，然后排序 *)
           let test_names = 
             Array.to_list files
             |> List.filter (fun f -> Filename.check_suffix f ".json")
@@ -203,7 +186,6 @@ let () =
           let total_passed = ref 0 in
           let total_cases = ref 0 in
           
-          (* 3. 逐个执行 run_test，路径拼接为 "test_progs/文件名" *)
           List.iter (fun name -> 
             let (p, c) = run_test (Printf.sprintf "%s/%s" arg name) false in
             total_passed := !total_passed + p;
@@ -215,7 +197,6 @@ let () =
         | Sys_error msg -> Printf.printf "Error accessing directory: %s\n" msg
         | e -> Printf.printf "An unexpected error occurred: %s\n" (Printexc.to_string e)
       end else begin
-        (* 如果不是 test_progs，则视为单个文件名执行 *)
         let _ = run_test arg true in ()
       end
   end

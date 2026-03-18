@@ -107,7 +107,6 @@ let string_of_insn (ins: Validation.instruction) =
   | Validation.Pno_spec -> 
       "nop (no_spec)"
 
-  (* 其他比较生僻或暂未使用的探测/原子指令 *)
   | Validation.Ploadsx _ -> "<loadsx>"
   | Validation.Pload_probe _ -> "<load_probe>"
   | Validation.Ploadsx_probe _ -> "<loadsx_probe>"
@@ -157,7 +156,6 @@ let print_addr_map (map: Validation.addr_region list) =
         (int64_of_coq_Z r.Validation.base_addr)
     ) map
 
-(* 💡 增加 addr_map 参数 *)
 let print_debug_state reason pc insn rs_before rs_after expected_trace addr_map =
   Printf.printf "\n================= DEBUG DUMP ====================\n";
   Printf.printf "[Trace Check Failed: %s]\n" reason;
@@ -175,7 +173,6 @@ let print_debug_state reason pc insn rs_before rs_after expected_trace addr_map 
 
 (* ==== 3. init debug hooks ==== *)
 let init_hooks verbose =
-  (* 只有 verbose 为 true 时才注册带打印功能的钩子 *)
   if verbose then begin
     Debug_hooks.fail_common_hook := (fun msg_str ->
       Printf.printf "\n[Trace Check Failed: COMMON ERROR]\n";
@@ -218,7 +215,6 @@ let init_hooks verbose =
       false
     )
   end else begin
-    (* 如果 verbose 为 false，注册“静默”钩子，只返回 false 不打印 *)
     Debug_hooks.fail_common_hook := (fun _ -> false);
     Debug_hooks.fail_exec_hook := (fun _ _ _ _ _ _ _ -> false);
     Debug_hooks.fail_decode_hook := (fun _ _ -> false);
