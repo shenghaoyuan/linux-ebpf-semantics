@@ -1,6 +1,5 @@
 ref/
 .vscode/
-trace/
 
 *.config
 .CoqMakefile.d

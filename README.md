@@ -23,6 +23,14 @@ The command `make` will check all coq files: specification (eBPF semantics + tnu
 make
 ```
 
+## Semantics Validation
+
+Two commands are provided to test two selftest suites.
+```shell
+make validation1 # build the workflow and test the execution trace from test_progs
+make validation2 # build the workflow and test the execution trace from test_bpf
+```
+
 ## Link to paper
 
 ```

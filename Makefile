@@ -16,7 +16,7 @@ COQBPF := $(addprefix ebpf/,$(BPF))
 BPF_FILTERED := $(filter-out Validation.v Extraction.v, $(BPF))
 COQBPF_FILTERED := $(addprefix ebpf/,$(BPF_FILTERED))
 
-.PHONY: all clean distclean tnumcode bpfcode
+.PHONY: all clean distclean tnumcode bpfcode validation1 validation2
 
 all: _CoqProject CoqMakefile
 	@echo "Building project..."
@@ -50,6 +50,12 @@ bpfcode:
 
 tnumcode:
 	coqwc $(COQSRC)
+
+validation1:
+	cd ebpf && dune exec ./main.exe test_progs
+
+validation2:
+	cd ebpf && dune exec ./main.exe test_bpf
 
 distclean: clean
 	@echo "Removing build system files..."
